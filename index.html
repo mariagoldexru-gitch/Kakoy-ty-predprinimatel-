@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101210" id="theme-color">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("founder-quiz-theme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.setAttribute("data-theme", saved);
+          document.getElementById("theme-color").setAttribute("content", saved === "light" ? "#f3f0e8" : "#101210");
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <meta name="description" content="Развлекательный квиз: какой ты предприниматель — стратег, креатор, системщик или визионер.">
+  <title>Какой ты предприниматель</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,560;0,9..144,650;1,9..144,560&family=Manrope:wght@430;560;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101210;
+      --bg-raise: #181b18;
+      --ink: #f4f1ea;
+      --muted: #a39e94;
+      --faint: #6f6b64;
+      --line: rgba(244, 241, 234, 0.12);
+      --lime: #dff56a;
+      --accent: #dff56a;
+      --lime-ink: #15210a;
+      --disabled-bg: #2a2e2a;
+      --disabled-ink: #7d796f;
+      --wash: rgba(255, 255, 255, 0.03);
+      --wash-hover: rgba(255, 255, 255, 0.04);
+      --track: rgba(244, 241, 234, 0.1);
+      --bar: rgba(244, 241, 234, 0.08);
+      --bar-fill: rgba(244, 241, 234, 0.35);
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+      --toggle-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+      --radius: 18px;
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --font: "Manrope", "Segoe UI", sans-serif;
+      --display: "Fraunces", Georgia, serif;
+    }
+
+    html[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f3f0e8;
+      --bg-raise: #fffcf7;
+      --ink: #171915;
+      --muted: #5c574e;
+      --faint: #8a8478;
+      --line: rgba(23, 25, 21, 0.12);
+      --lime: #dff56a;
+      --accent: #4c640c;
+      --disabled-bg: #e4e0d6;
+      --disabled-ink: #8d887e;
+      --wash: rgba(23, 25, 21, 0.04);
+      --wash-hover: rgba(23, 25, 21, 0.07);
+      --track: rgba(23, 25, 21, 0.1);
+      --bar: rgba(23, 25, 21, 0.08);
+      --bar-fill: rgba(23, 25, 21, 0.28);
+      --shadow: 0 24px 60px rgba(40, 36, 24, 0.08);
+      --toggle-shadow: 0 10px 28px rgba(40, 36, 24, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 90% -10%, rgba(223, 245, 106, 0.08), transparent 55%),
+        radial-gradient(900px 500px at -10% 110%, rgba(223, 245, 106, 0.05), transparent 50%),
+        var(--bg);
+      min-height: 100dvh;
+    }
+
+    button, input { font-family: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 calc(88px + var(--safe-b));
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--lime);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+      padding: 6px;
+    }
+    .mark span { background: var(--lime-ink); border-radius: 1px; }
+    .mark span:nth-child(2) { opacity: 0.45; }
+    .mark span:nth-child(3) { opacity: 0.7; }
+    .mark span:nth-child(4) { opacity: 0.25; }
+
+    .pill {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: var(--muted);
+      font-size: 13px;
+      background: var(--wash);
+    }
+
+    .screen { flex: 1; display: flex; flex-direction: column; }
+    .screen:not(.intro):not(.result-layout) {
+      width: 100%;
+      max-width: 760px;
+      margin-inline: auto;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 36px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .kicker {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin: 0 0 16px;
+    }
+
+    h1 {
+      font-family: var(--display);
+      font-weight: 560;
+      font-size: clamp(46px, 7vw, 84px);
+      line-height: 0.92;
+      letter-spacing: -0.035em;
+      margin: 0 0 18px;
+    }
+    h1 em {
+      font-style: italic;
+      font-weight: 560;
+    }
+
+    .lead {
+      max-width: 460px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.5;
+      margin: 0 0 28px;
+    }
+
+    .cta, .ghost, .next {
+      border: 0;
+      border-radius: 999px;
+      padding: 16px 22px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .cta, .next {
+      background: var(--lime);
+      color: var(--lime-ink);
+    }
+    .cta:hover, .next:hover:not(:disabled) { filter: brightness(1.05); }
+    .next:disabled {
+      background: var(--disabled-bg);
+      color: var(--disabled-ink);
+      cursor: not-allowed;
+    }
+    .ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    .ghost:hover { background: var(--wash-hover); }
+
+    .types {
+      display: grid;
+      gap: 10px;
+    }
+    .type-card {
+      background: var(--bg-raise);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 16px 15px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+    .type-index {
+      font-family: var(--display);
+      font-size: 22px;
+      color: var(--accent);
+      line-height: 1;
+      min-width: 28px;
+    }
+    .type-card h2 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .type-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .progress-wrap { margin-bottom: 22px; }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .track {
+      height: 4px;
+      background: var(--track);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .track > span {
+      display: block;
+      height: 100%;
+      background: var(--lime);
+      width: 0;
+      transition: width 0.35s ease;
+    }
+
+    .question {
+      font-family: var(--display);
+      font-weight: 560;
+      font-size: clamp(30px, 4.6vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin: 8px 0 22px;
+      max-width: 16ch;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .option {
+      text-align: left;
+      width: 100%;
+      background: var(--bg-raise);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 16px 16px 14px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+      transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+    }
+    .option:hover { border-color: rgba(223, 245, 106, 0.45); }
+    .option.is-selected {
+      background: var(--lime);
+      color: var(--lime-ink);
+      border-color: var(--lime);
+    }
+    .option.is-selected .option-text { color: rgba(21, 33, 10, 0.72); }
+    .key {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+    .option.is-selected .key {
+      border-color: rgba(21, 33, 10, 0.25);
+      color: var(--lime-ink);
+      background: rgba(21, 33, 10, 0.08);
+    }
+    .option-title {
+      display: block;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 3px;
+    }
+    .option-text {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .dock {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      padding: 14px 0 calc(8px + var(--safe-b));
+      background: linear-gradient(to top, var(--bg) 70%, transparent);
+    }
+    .dock .next { min-width: 180px; margin-left: auto; }
+    .dock .ghost { min-width: 110px; }
+    .dock .ghost[hidden] { display: none; }
+
+    .result-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .result-name {
+      font-family: var(--display);
+      font-size: clamp(56px, 8vw, 92px);
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      margin: 0 0 14px;
+    }
+    .hook {
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.45;
+      margin: 0 0 16px;
+      max-width: 34ch;
+    }
+    .portrait {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 0 0 18px;
+      max-width: 58ch;
+    }
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .note {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      background: var(--bg-raise);
+    }
+    .note span {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--faint);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .note p { margin: 0; line-height: 1.45; font-size: 15px; }
+    .quote {
+      margin: 0;
+      font-family: var(--display);
+      font-style: italic;
+      font-size: 22px;
+      line-height: 1.3;
+    }
+    .scores {
+      background: var(--bg-raise);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+    }
+    .scores h3 {
+      margin: 0 0 14px;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .score-row { margin-bottom: 12px; }
+    .score-row:last-child { margin-bottom: 0; }
+    .score-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+    .score-label b { font-weight: 700; }
+    .bar {
+      height: 8px;
+      border-radius: 99px;
+      background: var(--bar);
+      overflow: hidden;
+    }
+    .bar > span {
+      display: block;
+      height: 100%;
+      background: var(--bar-fill);
+      border-radius: inherit;
+    }
+    .score-row.is-top .bar > span { background: var(--lime); }
+    .score-row.is-top .score-label { color: var(--accent); }
+    .ally {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .fade-in { animation: rise 0.45s ease both; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @media (max-width: 920px) {
+      .dock { padding-right: 58px; }
+    }
+
+    @media (max-width: 800px) {
+      .app { width: min(100% - 28px, 1080px); padding-top: 18px; }
+      .topbar { gap: 8px; }
+      .brand { letter-spacing: 0.06em; font-size: 11px; white-space: nowrap; }
+      .pill { white-space: nowrap; font-size: 11px; padding: 7px 10px; }
+      .intro, .result-layout, .pair { grid-template-columns: 1fr; }
+      .question { max-width: none; }
+      h1 { font-size: clamp(42px, 12vw, 64px); }
+      .result-name { font-size: clamp(52px, 16vw, 76px); }
+      .dock .next, .dock .ghost { flex: 1; min-width: 0; }
+      .lead { font-size: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--lime);
+      outline-offset: 3px;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      right: 18px;
+      bottom: calc(18px + var(--safe-b));
+      z-index: 30;
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--bg-raise);
+      color: var(--ink);
+      box-shadow: var(--toggle-shadow);
+      display: grid;
+      place-items: center;
+      padding: 0;
+    }
+    .theme-toggle:hover { background: var(--wash-hover); }
+    .theme-toggle svg { width: 22px; height: 22px; display: block; }
+    html:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
+    html[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+  </style>
+</head>
+<body>
+  <div class="app" id="app"></div>
+  <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Включить светлую тему">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15.5 3.5a8.2 8.2 0 1 0 5 12.2A7.2 7.2 0 0 1 15.5 3.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <script>
+    const TYPES = {
+      strategist: {
+        name: "Стратег",
+        short: "выбирает поле, где можно выиграть",
+        blurb: "Сначала карта рынка, потом ход.",
+        hook: "Ты выигрываешь не громче всех. Ты выбираешь поле, где остальные уже проиграли.",
+        portrait: "Ты смотришь на бизнес как на позицию: сегмент, конкуренты, цена ошибки и право забрать долю. Тебе мало «запустить что-нибудь красивое» — важно, почему именно эта ставка окупится. Рядом с тобой команда реже мечется и чаще знает, чего сегодня не делаем.",
+        strength: "Умеешь отсекать лишнее и держать приоритет, даже когда все тянут в разные стороны.",
+        blind: "Можно так тщательно выбирать ход, что соседний креатор уже вышел к клиентам.",
+        quote: "Это красиво. А где мы зарабатываем право победить?"
+      },
+      creator: {
+        name: "Креатор",
+        short: "делает продукт, который узнают с одного взгляда",
+        blurb: "Сначала ощущение, потом упаковка.",
+        hook: "Ты делаешь вещи, которые люди узнают ещё до того, как прочитают прайс.",
+        portrait: "Тебе мало, чтобы «работало». Нужно, чтобы было живо: тон, форма, первая секунда, деталь, которую хочется показать другу. Сырую идею ты превращаешь в предложение с характером. Часто продукт появляется у тебя раньше, чем на него находится таблица.",
+        strength: "Вкус и умение собрать смысл так, чтобы его нельзя было спутать с чужим.",
+        blind: "Вдохновение не заменяет ритм. Без системы магия рискует остаться на прототипе.",
+        quote: "Если это можно перепутать с конкурентом — мы ещё не начали."
+      },
+      operator: {
+        name: "Системщик",
+        short: "превращает удачу в повторяемый механизм",
+        blurb: "Сначала схема, которая не развалится.",
+        hook: "Пока другие празднуют запуск, ты уже думаешь, как повторить это сто раз.",
+        portrait: "Ты любишь, когда хаос становится схемой: роли, метрики, ритм недели, чеклист, который спасает в пятницу вечером. Тебе доверяют деньги и процессы, потому что бизнес рядом с тобой не держится на героизме одного человека.",
+        strength: "Умеешь масштабировать без постоянного пожара и героизма основателя.",
+        blind: "Идеальный процесс иногда приходит слишком рано и душит ставку, которую ещё рано оптимизировать.",
+        quote: "Если это нельзя передать команде — это ещё не бизнес."
+      },
+      visionary: {
+        name: "Визионер",
+        short: "ставит на будущее, которого ещё нет в отчётах",
+        blurb: "Сначала мир, потом продукт.",
+        hook: "Ты ставишь на будущее, которого пока нет ни в одной сводке.",
+        portrait: "Тебе тесно в улучшениях на десять процентов. Ты думаешь категориями, сменой привычек и тем, каким станет рынок, если ставка сыграет. Люди идут за тобой не из-за таблицы — из-за ощущения, что вы строите больше, чем очередной сервис.",
+        strength: "Задаёшь направление, которое собирает людей сильнее любого оффера.",
+        blind: "Горизонт на десять лет не отменяет кассу в этом квартале. Стратег и системщик тебе не враги.",
+        quote: "Мы не улучшаем рынок. Мы предлагаем ему другой."
+      }
+    };
+
+    const ORDER = ["strategist", "creator", "operator", "visionary"];
+
+    const QUESTIONS = [
+      {
+        title: "С чего начинается твой новый бизнес?",
+        options: [
+          { type: "strategist", title: "С карты поля", text: "Ниша, конкуренты и место, где реально можно выиграть." },
+          { type: "creator", title: "С образа продукта", text: "Как это выглядит, звучит и запоминается с первого касания." },
+          { type: "operator", title: "С рабочей схемы", text: "Путь клиента и то, что не сломается на десятом заказе." },
+          { type: "visionary", title: "Со ставки на будущее", text: "Какую привычку мира ты собираешься поменять." }
+        ]
+      },
+      {
+        title: "У тебя 15 минут с инвестором. Чем открываешь?",
+        options: [
+          { type: "strategist", title: "Позицией и экономикой", text: "Где деньги, какая доля и почему ход трудно скопировать." },
+          { type: "creator", title: "Живым продуктом", text: "Демо и история, от которой сложно отвести взгляд." },
+          { type: "operator", title: "Тем, как это уже крутится", text: "Цифры, ритм, автоматизация и почему команда не горит." },
+          { type: "visionary", title: "Картиной мира", text: "Каким станет рынок, если вы окажетесь правы." }
+        ]
+      },
+      {
+        title: "В команде два сильных мнения, а дедлайн завтра.",
+        options: [
+          { type: "strategist", title: "Возвращаешь к победе", text: "Спор имеет смысл только относительно критерия выигрыша." },
+          { type: "creator", title: "Защищаешь странную версию", text: "Пока её не услышали по-настоящему, решение рано закрывать." },
+          { type: "operator", title: "Режешь на шаги", text: "Владелец, срок и следующий конкретный ход вместо дискуссии." },
+          { type: "visionary", title: "Поднимаешь планку", text: "Спор слишком мелкий для ставки, которую вы на самом деле делаете." }
+        ]
+      },
+      {
+        title: "Клиент говорит: «Как у всех, только дешевле».",
+        options: [
+          { type: "strategist", title: "Меняешь сегмент", text: "Ищешь тех, для кого цена — не главный аргумент." },
+          { type: "creator", title: "Ломаешь сравнение", text: "Упаковываешь так, чтобы «как у всех» стало невозможным." },
+          { type: "operator", title: "Считаешь лишнее", text: "Убираешь то, что не влияет на качество, и сохраняешь маржу." },
+          { type: "visionary", title: "Отказываешь вслух", text: "Называешь продукт, который строишь, а не скидку, которую просят." }
+        ]
+      },
+      {
+        title: "Что для тебя настоящий рост?",
+        options: [
+          { type: "strategist", title: "Позиция", text: "Доля рынка и преимущество, которое трудно повторить." },
+          { type: "creator", title: "Узнаваемость", text: "Продукт, о котором говорят без рекламного бюджета." },
+          { type: "operator", title: "Повторяемость", text: "Заявка, оплата, повтор — и это можно передать команде." },
+          { type: "visionary", title: "Новая категория", text: "Рынок, которого вчера ещё не существовало." }
+        ]
+      },
+      {
+        title: "Через полгода гипотеза не взлетела. Первая честная мысль?",
+        options: [
+          { type: "strategist", title: "Модель разошлась с рынком", text: "Где допущение было красивым, а спрос — нет." },
+          { type: "creator", title: "Идея была живая", text: "Не сработало исполнение, а не сам замысел." },
+          { type: "operator", title: "Мы не видели поломку", text: "Процесс молчал, пока всё уже разъезжалось." },
+          { type: "visionary", title: "Целились слишком близко", text: "Ставка была аккуратной, но недостаточно смелой." }
+        ]
+      },
+      {
+        title: "Куда с радостью уходят лучшие часы недели?",
+        options: [
+          { type: "strategist", title: "В выбор ставок", text: "Приоритеты, отказы и жёсткое «это сейчас не делаем»." },
+          { type: "creator", title: "В мастерскую", text: "Прототип, текст, форма и эксперимент руками." },
+          { type: "operator", title: "В ритм и узкие места", text: "Метрики, передачи между людьми и то, что тормозит поток." },
+          { type: "visionary", title: "В дальний горизонт", text: "Разговоры с теми, кто смотрит на десять лет вперёд." }
+        ]
+      },
+      {
+        title: "Через пять лет ты хочешь услышать о себе:",
+        options: [
+          { type: "strategist", title: "На шаг впереди рынка", text: "«Они каждый раз оказывались там, где появлялись деньги»." },
+          { type: "creator", title: "У них есть вкус", text: "«Это видно в каждой детали, даже без логотипа»." },
+          { type: "operator", title: "Бизнес работает без героя", text: "«Основатель может уехать, а машина не останавливается»." },
+          { type: "visionary", title: "Они сменили правила", text: "«Они не подкрутили старое — они предложили другое»." }
+        ]
+      }
+    ];
+
+    const KEYS = ["1", "2", "3", "4"];
+    const app = document.getElementById("app");
+
+    const state = {
+      screen: "intro",
+      index: 0,
+      answers: [],
+      selected: null
+    };
+
+    function scoreAnswers(answers) {
+      const scores = { strategist: 0, creator: 0, operator: 0, visionary: 0 };
+      const last = { strategist: -1, creator: -1, operator: -1, visionary: -1 };
+      answers.forEach((type, i) => {
+        scores[type] += 1;
+        last[type] = i;
+      });
+      const ranked = ORDER.slice().sort((a, b) => {
+        if (scores[b] !== scores[a]) return scores[b] - scores[a];
+        return last[b] - last[a];
+      });
+      const primary = ranked[0];
+      const secondary = ranked[1];
+      const ally = scores[secondary] > 0 && scores[primary] - scores[secondary] <= 1 ? secondary : null;
+      return { scores, primary, ally };
+    }
+
+    function brand() {
+      return `
+        <div class="brand">
+          <span class="mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+          Тип основателя
+        </div>`;
+    }
+
+    function renderIntro() {
+      const cards = ORDER.map((id, i) => {
+        const type = TYPES[id];
+        return `
+          <article class="type-card">
+            <div class="type-index">0${i + 1}</div>
+            <div>
+              <h2>${type.name}</h2>
+              <p>${type.blurb}</p>
+            </div>
+          </article>`;
+      }).join("");
+
+      app.innerHTML = `
+        <header class="topbar">
+          ${brand()}
+          <div class="pill">8 вопросов · около 2 минут</div>
+        </header>
+        <main class="screen intro fade-in">
+          <section>
+            <p class="kicker">Развлекательный квиз</p>
+            <h1>Какой ты <em>предприниматель</em></h1>
+            <p class="lead">Не тест из корпоративного портала. Восемь рабочих ситуаций — и один честный тип: стратег, креатор, системщик или визионер.</p>
+            <button class="cta" data-action="start" type="button">Начать</button>
+          </section>
+          <section class="types" aria-label="Возможные результаты">${cards}</section>
+        </main>`;
+    }
+
+    function renderQuiz() {
+      const q = QUESTIONS[state.index];
+      const progress = Math.round(((state.index + 1) / QUESTIONS.length) * 100);
+      const options = q.options.map((option, i) => `
+        <button class="option${state.selected === option.type ? " is-selected" : ""}" type="button" data-action="pick" data-type="${option.type}">
+          <span class="key">${KEYS[i]}</span>
+          <span>
+            <span class="option-title">${option.title}</span>
+            <span class="option-text">${option.text}</span>
+          </span>
+        </button>`).join("");
+
+      app.innerHTML = `
+        <header class="topbar">
+          ${brand()}
+          <div class="pill">${state.index + 1} / ${QUESTIONS.length}</div>
+        </header>
+        <main class="screen fade-in">
+          <div class="progress-wrap">
+            <div class="progress-meta">
+              <span>Вопрос ${state.index + 1} из ${QUESTIONS.length}</span>
+              <span>${progress}%</span>
+            </div>
+            <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}">
+              <span style="width:${progress}%"></span>
+            </div>
+          </div>
+          <h1 class="question" id="question">${q.title}</h1>
+          <div class="options" role="listbox" aria-labelledby="question">${options}</div>
+          <div class="dock">
+            <button class="ghost" type="button" data-action="back" ${state.index === 0 ? "hidden" : ""}>Назад</button>
+            <button class="next" type="button" data-action="next" ${state.selected ? "" : "disabled"}>
+              ${state.index === QUESTIONS.length - 1 ? "Узнать результат" : "Дальше"}
+            </button>
+          </div>
+        </main>`;
+    }
+
+    function renderResult() {
+      const { scores, primary, ally } = scoreAnswers(state.answers);
+      const type = TYPES[primary];
+      const max = QUESTIONS.length;
+      const rows = ORDER
+        .slice()
+        .sort((a, b) => scores[b] - scores[a])
+        .map((id) => {
+          const value = scores[id];
+          const width = Math.round((value / max) * 100);
+          return `
+            <div class="score-row${id === primary ? " is-top" : ""}">
+              <div class="score-label"><b>${TYPES[id].name}</b><span>${value} из ${max}</span></div>
+              <div class="bar"><span style="width:${width}%"></span></div>
+            </div>`;
+        }).join("");
+
+      const allyText = ally
+        ? `<p class="ally">Рядом с этим в тебе сильно звучит ${TYPES[ally].name.toLowerCase()}: ${TYPES[ally].short}.</p>`
+        : `<p class="ally">Тип получился собранным: ответы почти не разъезжались в другие роли.</p>`;
+
+      app.innerHTML = `
+        <header class="topbar">
+          ${brand()}
+          <div class="pill">Результат готов</div>
+        </header>
+        <main class="screen result-layout fade-in">
+          <section>
+            <p class="eyebrow">Твой тип</p>
+            <h1 class="result-name">${type.name}</h1>
+            <p class="hook">${type.hook}</p>
+            <p class="portrait">${type.portrait}</p>
+            <div class="pair">
+              <article class="note"><span>Суперсила</span><p>${type.strength}</p></article>
+              <article class="note"><span>Слепое пятно</span><p>${type.blind}</p></article>
+            </div>
+            <p class="quote">«${type.quote}»</p>
+            <div class="result-actions">
+              <button class="cta" type="button" data-action="restart">Пройти ещё раз</button>
+            </div>
+          </section>
+          <aside class="scores">
+            <h3>Как распределились ответы</h3>
+            ${rows}
+            ${allyText}
+          </aside>
+        </main>`;
+    }
+
+    function render() {
+      if (state.screen === "intro") renderIntro();
+      else if (state.screen === "quiz") renderQuiz();
+      else renderResult();
+    }
+
+    app.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-action]");
+      if (!target || target.disabled) return;
+      const action = target.dataset.action;
+
+      if (action === "start") {
+        state.screen = "quiz";
+        state.index = 0;
+        state.answers = [];
+        state.selected = null;
+        render();
+        return;
+      }
+
+      if (action === "pick") {
+        state.selected = target.dataset.type;
+        app.querySelectorAll(".option").forEach((node) => {
+          node.classList.toggle("is-selected", node.dataset.type === state.selected);
+        });
+        const next = app.querySelector("[data-action='next']");
+        if (next) next.disabled = false;
+        return;
+      }
+
+      if (action === "next") {
+        if (!state.selected) return;
+        state.answers[state.index] = state.selected;
+        if (state.index === QUESTIONS.length - 1) {
+          state.screen = "result";
+        } else {
+          state.index += 1;
+          state.selected = state.answers[state.index] || null;
+        }
+        render();
+        return;
+      }
+
+      if (action === "back") {
+        if (state.index === 0) return;
+        state.answers[state.index] = state.selected;
+        state.index -= 1;
+        state.selected = state.answers[state.index] || null;
+        render();
+        return;
+      }
+
+      if (action === "restart") {
+        state.screen = "intro";
+        state.index = 0;
+        state.answers = [];
+        state.selected = null;
+        render();
+      }
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (state.screen !== "quiz") return;
+      if (event.target && ["INPUT", "TEXTAREA"].includes(event.target.tagName)) return;
+      const keyIndex = KEYS.indexOf(event.key);
+      if (keyIndex >= 0) {
+        const option = QUESTIONS[state.index].options[keyIndex];
+        state.selected = option.type;
+        app.querySelectorAll(".option").forEach((node) => {
+          node.classList.toggle("is-selected", node.dataset.type === state.selected);
+        });
+        const next = app.querySelector("[data-action='next']");
+        if (next) next.disabled = false;
+      }
+      if (event.key === "Enter") {
+        const next = app.querySelector("[data-action='next']");
+        if (next && !next.disabled) next.click();
+      }
+    });
+
+    const themeToggle = document.getElementById("theme-toggle");
+    const themeColor = document.getElementById("theme-color");
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      const light = theme === "light";
+      themeToggle.setAttribute("aria-label", light ? "Включить тёмную тему" : "Включить светлую тему");
+      themeColor.setAttribute("content", light ? "#f3f0e8" : "#101210");
+      try { localStorage.setItem("founder-quiz-theme", theme); } catch (e) {}
+    }
+
+    applyTheme(document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark");
+
+    themeToggle.addEventListener("click", () => {
+      const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+      applyTheme(next);
+    });
+
+    render();
+  </script>
+</body>
+</html>
